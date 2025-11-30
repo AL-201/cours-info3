@@ -1,0 +1,17 @@
+/**--- Variables ---**/
+:root{
+  --bg: #ffffff; /* Background */
+  --text: #222222; /* "Titre" */
+  --muted: #666666; /* Texte */
+  --accent: #8c43da; /* Bouton */
+  --surface: #ececec; /* Background 2 */
+  --card: #e5e7df; /* Grille */
+
+  --max-width: 2400px;
+
+  /* dark */
+  --bg-dark: #15171a; /* Bkgd DarkMode */
+  --text-dark: #f3ecec; /* "Titre" DarkMode */
+  --surface-dark: #1e1e1e; /* BkGd 2 Dark Mode */
+  --card-dark: #57656b; /* Grille Dark Mode */
+}
