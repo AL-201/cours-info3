@@ -1,0 +1,259 @@
+/**--- Page des Projets Individuels ---**/
+.Projet-Azul, .Projet-Motus {
+    padding: 40px 0;
+    max-height: 2000px;
+}
+
+/* Conteneur global : bloc gauche + blocs droits */
+.layout-projet {
+    display: flex;
+    gap: 30px;
+    align-items: stretch;
+    margin-top: 20px;
+}
+
+
+
+/**--- Bloc Gauche ---**/
+.projet-info {
+    width: 30%;
+    background: var(--surface);
+    padding: 22px;
+    border-radius: 12px;
+    height: auto;
+    margin-left: 40px;
+}
+
+/* Dark mode */
+#theme-toggle:checked ~ main .projet-info {
+    background: var(--surface-dark);
+}
+
+/**--- Colonne Droite ---**/
+.projet-codes {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-right: 40px;
+}
+
+/**--- Bloc Droit (Individuel et Duplicable) ---**/
+.code-block {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Dark mode */
+#theme-toggle:checked ~ main .code-block {
+    background: var(--card-dark);
+}
+
+/* Style du titre des blocs */
+.code-block h3 {
+    margin-bottom: 12px;
+}
+
+/* Style du code */
+.code-block pre {
+    margin: 0;
+    padding: 0;
+    white-space: pre-wrap;
+    font-family: Consolas, monospace;
+    color: var(--text);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/**--- Page Projet (Pour Projet Discord Uniquement (Gros Projet avec Disposition différente) ---**/
+
+.project-layout-special {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    max-height: 1500px;
+}
+
+/**--- Ligne Supérieur ---**/
+.top-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr; /* 66% / 33% */
+    gap: 24px;
+    max-height: 400px;
+    margin-top: 50px;
+}
+
+/* Bloc Info */
+.project-info-large {
+    background: var(--surface);
+    padding: 24px;
+    border-radius: 25px;
+    overflow-y: auto;
+}
+
+/* Bloc Code principal */
+.project-main-code {
+    background: var(--card);
+    padding: 24px;
+    border-radius: 25px;
+    overflow-y: auto;
+}
+
+/**--- Grille de 4 Blocs ---**/
+.code-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.code-block {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Code */
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+
+/* ----- DARK MODE ----- */
+#theme-toggle:checked ~ main.project-layout-special .project-main-code,
+#theme-toggle:checked ~ main.project-layout-special .code-block {
+    background: var(--card-dark);
+    color: var(--text);
+}
+#theme-toggle:checked ~ main.project-layout-special h3,
+#theme-toggle:checked ~ main.project-layout-special h2 {
+    color: var(--text-dark);
+}
+#theme-toggle:checked ~ main .project-info-large {
+    background: var(--surface-dark);
+}
+
+/* Scrollbars */
+.code-block::-webkit-scrollbar {
+    width: 8px;
+}
+.code-block::-webkit-scrollbar-thumb {
+    background: #9994;
+    border-radius: 4px;
+}
+#theme-toggle:checked ~ main.project-layout-special .code-block::-webkit-scrollbar-thumb {
+    background: #ccc4;
+}
+
+
+/* ----- RESPONSIVE ----- */
+@media (max-width: 900px) {
+    .top-row {
+        grid-template-columns: 1fr;
+    }
+
+    .code-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .code-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+/**--- Naviguation entre Projet ---**/
+
+.project-nav-min {
+    margin-top: 40px;
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+}
+.project-nav-min2 {
+    margin: 0 42px;
+    padding-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+}
+
+/* Liens flèches */
+.arrow-min {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Effet hover */
+.arrow-min:hover {
+    opacity: 0.6;
+    transform: translateY(-2px);
+}
+
+/* Dark Mode */
+#theme-toggle:checked ~ main .arrow-min {
+    color: var(--text-dark);
+}
+
+#theme-toggle:checked ~ main .arrow-min:hover {
+    opacity: 0.8;
+}
+
+
+
+/* Responsive */
+@media (max-width: 600px) {
+    .project-nav-min {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+}
+
+/* -- Responsive -- */
+@media (max-width: 600px) {
+    .nav-arrow {
+        width: 44px;
+        height: 44px;
+        font-size: 1.15rem;
+    }
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+
+    .layout-projet {
+        flex-direction: column;
+    }
+
+    .projet-info, .projet-codes {
+        width: 100%;
+    }
+
+    .code-block {
+        max-height: 260px;
+    }
+}
