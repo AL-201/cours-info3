@@ -1,0 +1,236 @@
+/**--- Section Présentation ---**/
+.presentation {
+    display: flex;
+    justify-content: space-between;
+    padding: 80px 0;
+    gap: 40px;
+    margin-left: 5%;
+    align-items: center;
+}
+
+.presentation article {
+    max-width: 45%;
+}
+
+.presentation h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+.presentation p {
+    text-align: justify;
+}
+
+.presentation li {
+    margin-top: 16px;
+    line-height: 1.6;
+    color: var(--muted);
+    text-align: justify;
+}
+
+
+/* Boutons Présentation */
+.presentation nav, h2 {
+    text-align: center;
+}
+/* Animations Boutons */
+.bouton-propos {
+    display: inline-block;
+    background-color: #b3b2b4;
+    cursor: pointer;
+    transition: all 400ms;
+    color: #353535;
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+    border: none;position: relative;
+    overflow: hidden;
+    margin-right: 10px;
+    margin-top: 10px;
+    
+}
+.bouton-propos::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+  
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 1000ms;
+}
+
+.bouton-projet {
+    display: inline-block;
+    background: var(--accent);
+    cursor: pointer;
+    transition: all 400ms;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+    border: none;position: relative;
+    overflow: hidden;
+    margin-right: 10px;
+    margin-top: 10px;
+    
+}
+.bouton-projet::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: #b3b2b4;
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 1000ms;
+}
+
+.bouton-projet:hover {
+  color: #353535;
+  transform: scale(1.1);
+}
+.bouton-propos:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+.bouton-projet:hover::before, .bouton-propos:hover::before {
+  width: 250%;
+}
+
+
+
+
+/**--- Grille Portfolio ---**/
+aside {
+    background: var(--card);
+    padding: 30px;
+    text-align: center;
+    width: 45%;
+    border-radius: 10px;
+    margin-right: 5%;
+}
+
+.grid-accueil {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.card {
+    background: white;
+    padding: 40px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+
+
+/**--- Contact ---**/
+#contact {
+    padding: 80px 0;
+    text-align: center;
+}
+
+#contact h2 {
+    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+    margin-bottom: 16px;
+}
+
+#contact p {
+    margin-bottom: 32px;
+}
+
+#contact form {
+    background: var(--card);
+    width: 44%;
+    margin: 0 auto;
+    margin-top: 50px;
+    padding: 40px;
+    border-radius: 15px;
+}
+
+#contact form input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 25px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+}
+
+#contact form button {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+
+/**--- Responsive Spécifique ---**/
+@media(max-width: 900px) {
+
+    .presentation {
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+    }
+
+    aside, .presentation article {
+        width: 100%;
+    }
+
+    .grid-accueil { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 12px; 
+    }
+
+    #contact form { 
+        width: 70%; 
+        padding: 32px; 
+    }
+}
+
+@media(max-width: 600px) {
+
+    .grid-accueil { 
+        grid-template-columns: 1fr; 
+        gap: 12px; 
+    }
+
+    #contact form { 
+        width: 90%; 
+        padding: 24px; 
+    }
+    
+    .presentation h2 { 
+        font-size: 1.4rem; 
+    }
+    
+    .presentation p { 
+        font-size: 0.95rem; 
+    }
+    
+    .bouton-projet, .bouton-propos { 
+        padding: 10px 18px; 
+        font-size: 0.9rem; 
+    }
+}
