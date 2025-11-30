@@ -1,23 +1,176 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio</title>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio - À Propos</title>
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/a_propos.css" />
 
-<div class ="Header">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <input
+      type="checkbox"
+      id="theme-toggle"
+      aria-label="checkbox dark mode"
+      hidden
+    />
+
+    <!-- Header -->
     <header>
-        <button popovertarget="menu" popovertargetaction="sho"><img src="../images/menu.webp" width="20"></img></button>
-        <nav popover id="menu">
-        <a href ="../index.html"> <p>Page 1</p></a>
-        <a href ="pages 2.html"> <p>Page 2</p></a>
-        <a href ="pages 4.html"> <p>Page 4</p></a>
-        </nav>
-    </header>
-</div>
+      <h1 class="logo">Portfolio</h1>
+      <nav>
+        <a href="../index.html">Accueil</a>
+        <a href="pages_2.html">Projets</a>
+        <a href="pages_3.html">À Propos</a>
+      </nav>
 
-<body>
-    
-</body>
+      <section class="header-right">
+        <a href="../index.html#contact" class="bouton-contact">Me Contacter</a>
+
+        <label for="theme-toggle" class="theme-icon">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </label>
+      </section>
+    </header>
+
+    <main>
+      <!-- Section À Propos -->
+      <section class="apropos">
+        <header>
+          <h2 class="static-color">
+            À propos de moi, de ma vie, toussa toussa
+          </h2>
+        </header>
+
+        <article>
+          <p>
+            Née à Calais, j'ai fait mes premiers pas en dehors de la maternelle
+            à l'école St-Agnès. J'ai ensuite, malheureusement, dû déménager de
+            cette magnifique ville qu'est Calais pour aller dans le sud, là où
+            la chaleur fait fondre nos atomes si vite, à 15min de Marseille,
+            dans une ville nommée Septèmes-les-Vallons. J'y ai continué mes
+            études au collège Marc Ferrandi. Je suis enfin passé au Lycée, à
+            Marie Madeleine Fourcade, à Gardanne, grâce à mes études de Latin
+            Grec. Sans eux, j'étais contraint de passer au Lycée Saint-Exupery,
+            pas très réputé. <br /><br />
+            C'est là-bas, au lycée, que j'ai commencé à m'intéresser à
+            l'informatique, les études d'info au collège étaient si triviales
+            que ça me laissait plus qu'autre chose, mais au lycée ça a vraiment
+            changé. Je me suis intéressé à la programmation, aux bases de
+            données, aux réseaux, c'était la première matière où je me suis
+            vraiment mis à travailler chez moi pendant plusieurs heures sans
+            voir passer le temps et où je m'amusais vraiment. <br /><br />
+            Ayant des facilités et des parents qui attendaient beaucoup de moi,
+            je me suis mis en quête d'aller dans une prépa intégré pour obtenir
+            un diplôme d'ingénieur. Mais sans surprise, j'étais pas de niveau…
+            Alors, pas de niveau, tout est relatif, en réalité, j'étais
+            extrêmement surpris des matières abordés dans ma prépa intégré, 60%
+            des matières étaient composés de Physique et de Chimie, pour 35% de
+            Math et enfin 5% d'informatique. Alors si j'ai raté ma première
+            année d'intégration à cette prépa, c'est surtout parce que je hais
+            la Physique-Chimie et que cette année était essentiellement composée
+            de ces matières de l'enfer. Parce que oui, la seule matière
+            d'informatique que j'ai eu, je l'ai passé les doigts dans le nez
+            avec 19 aux examens, mais la raison à ça c'est que l'informatique
+            qu'on y a fait était vraiment bidon.. À titre d'exemple, on a appris
+            à se servir de Excel, puis on a appris à faire des requêtes basiques
+            sur MySQL… <br /><br />
+            Après cet échec, qui n'en était pas vraiment un, j'appellerais
+            plutôt ça une erreur de parcours, j'ai décidé de partir en Licence
+            Informatique, Licence dans laquelle j'étais certain d'y trouver de
+            l'informatique à sa juste valeur et de pouvoir le travailler
+            réellement. Alors me voici.
+          </p>
+          <br />
+          <p>
+            Sinon, en dehors de mon parcours scolaire, je suis une personne
+            assez calme qui apprécie énormément la lecture mais également les
+            jeux, qu'il soit de type société ou vidéo. <br />
+            J'ai une famille de musiciens, ce pourquoi je m'y suis aussi penché,
+            j'ai à mon actif 5 ans de piano et 3 de guitare, ainsi qu'une année
+            de conservatoire au conservatoire de Calais.
+          </p>
+        </article>
+      </section>
+
+      <!-- Section Compétences -->
+      <section class="competences">
+        <header>
+          <h2 class="static-color">
+            Mes Compétences Informatique (mais pas que)
+          </h2>
+        </header>
+
+        <ul>
+          <li style="--i: 1">Python (La base...)</li>
+          <li style="--i: 2">Dessin (Papier / Graphique)</li>
+          <li style="--i: 3">Rubik's Cube (Record : 1m04)</li>
+          <li style="--i: 4">MySQL (Analyse & Base de données)</li>
+          <li style="--i: 5">Développement Web (HTML, CSS) (on est dedans)</li>
+          <li style="--i: 6">
+            Apps Script Google (Scripts sur Google Doc & Spreadsheet)
+          </li>
+          <li style="--i: 7">
+            Musicien (Piano / Guitare / (Flûte Traversière / Saxophone /
+            Hautbois / Cor))
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <nav class="footer-links">
+        <a href="../index.html">Accueil</a>
+        <a href="pages_2.html">Projets</a>
+        <a href="pages_3.html">À Propos</a>
+      </nav>
+
+      <!-- Réseaux Sociaux -->
+      <section class="socials">
+        <a href="mailto:tonmailpro@domaine.com" aria-label="Envoyer un Mail">
+          <i class="fas fa-envelope"></i
+        ></a>
+        <a
+          href="https://github.com/AL-201"
+          target="_blank"
+          aria-label="Compte Github"
+        >
+          <i class="fab fa-github"></i
+        ></a>
+        <a
+          href="https://linkedin.com"
+          target="_blank"
+          aria-label="Page Linkedin"
+        >
+          <i class="fab fa-linkedin-in"></i
+        ></a>
+        <a
+          href="https://instagram.com"
+          target="_blank"
+          aria-label="Page Instagram"
+        >
+          <i class="fab fa-instagram"></i
+        ></a>
+      </section>
+
+      <p class="credits">
+        Privacy Policy · Legal · © 2025 Portfolio. All rights reserved.
+      </p>
+    </footer>
+  </body>
 </html>
