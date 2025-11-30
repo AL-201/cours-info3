@@ -112,12 +112,6 @@ from config import logger, ALLOWED_HELPER_IDS, LOG_CHANNEL_ID
 # FONCTIONS GLOBALES
 # ============================
 
-# --- Setup ---
-intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="!", intents=intents)
-LOCAL_TZ = tz("Europe/Paris")
-
-
 # --- Temps ---
 def is_summer_time(now: datetime) -> bool:
     """Retourne True si heure d'été, False si heure d'hiver."""
@@ -156,82 +150,6 @@ def save_custom_messages():
     with open("messages.json", "w", encoding="utf-8") as f:
         json.dump(CUSTOM_MESSAGES, f, ensure_ascii=False, indent=2)
         logger.info(f"[Save] : Messages Customs Save")
-
-
-# --- GgSheet ---
-def normalize(name):
-    return str(name).strip().lower() if name is not None else ""
-
-pending_updates = {}
-
-def queue_update(member_name, helper_id, helper_name, date_obj):
-    """Ajoute ou met à jour la queue pour un membre"""
-    helper_name_clean = ALLOWED_HELPER_IDS.get(helper_id, helper_name)
-
-    if member_name in pending_updates:
-        # garder le plus récent
-        if date_obj > pending_updates[member_name]["date"]:
-            pending_updates[member_name] = {
-                "helper_id": helper_id,
-                "helper_name": helper_name_clean,
-                "date": date_obj,
-            }
-    else:
-        pending_updates[member_name] = {
-            "helper_id": helper_id,
-            "helper_name": helper_name_clean,
-            "date": date_obj,
-        }
-
-async def flush_updates(worksheet):
-    """Écrit toutes les mises à jour dans le Google Sheet"""
-    records = worksheet.get_all_records()
-    # Dictionnaire des membres existants pour lookup rapide
-    existing_members = {str(row.get("Nom")): idx+2 for idx, row in enumerate(records)}  # +2 car header
-
-    batch_data = []
-
-    for member_name, data in pending_updates.items():
-        helper_id = data["helper_id"]
-        helper_name = ALLOWED_HELPER_IDS.get(helper_id, data["helper_name"])
-        date_obj = data["date"]
-        local_time = date_obj.replace(tzinfo=timezone.utc).astimezone(LOCAL_TZ)
-        date_str = local_time.strftime("%d/%m/%Y %H:%M:%S")
-
-        if member_name in existing_members:
-            row_idx = existing_members[member_name]
-            batch_data.append({
-                "range": f"B{row_idx}:C{row_idx}",
-                "values": [[helper_name, date_str]]
-            })
-            logger.info(f"[SYNC] Mise à jour {member_name} ({helper_name} / {date_str})")
-        else:
-            batch_data.append({
-                "range": f"A{len(records)+2}:C{len(records)+2}",
-                "values": [[member_name, helper_name, date_str]]
-            })
-            logger.info(f"[SYNC] Ajout {member_name} ({helper_name} / {date_str})")
-
-    if batch_data:
-        worksheet.batch_update(batch_data)
-
-    pending_updates.clear()
-
-async def scan_thread(thread):
-    """Scan un thread pour trouver le dernier message d'un helper"""
-    last_helper_msg = None
-
-    async for msg in thread.history(limit=50):  # prend les 50 derniers messages
-        if msg.author.id in ALLOWED_HELPER_IDS:
-            last_helper_msg = msg
-            break  # le plus récent des helpers
-    if last_helper_msg:
-        queue_update(
-            thread.name,
-            last_helper_msg.author.id,
-            last_helper_msg.author.display_name,
-            last_helper_msg.created_at,
-        )
 
 
 # --- Discord ---
@@ -276,36 +194,6 @@ class CommandesCog(commands.Cog):
         await log_action(interaction.user.display_name, "check")
 
 
-    @app_commands.command(name="resync", description="Force un resync complet des fils", guild=discord.Object(id=GUILD_ID))
-    async def resync(self, interaction: discord.Interaction):
-        if interaction.channel.id not in ADMIN_CHANNELS:
-            await interaction.response.send_message("❌ Commande autorisée uniquement dans le salon admin. ❌", ephemeral=True)
-            return
-        await interaction.response.defer()
-        guild = interaction.guild
-        for chan_id in TARGET_CHANNELS:
-            chan = guild.get_channel(chan_id)
-            if not chan:
-                continue
-            for thread in chan.threads:
-                await scan_thread(thread)
-            async for thread in chan.archived_threads(limit=50):
-                await scan_thread(thread)
-        await flush_updates(worksheet)
-        await interaction.followup.send("✅ Resync terminé !")
-        await log_action(interaction.user.display_name, "resync")
-
-
-    @app_commands.command(name="add", description="Ajoute un membre au GoogleSheet", guild=discord.Object(id=GUILD_ID))
-    async def add(self, interaction: discord.Interaction, member_name: str):
-        if interaction.channel.id not in ADMIN_CHANNELS:
-            await interaction.response.send_message("❌ Commande autorisée uniquement dans le salon admin. ❌", ephemeral=True)
-            return
-        worksheet.append_row([member_name, "", ""])
-        await interaction.response.send_message(f"✅ Membre {member_name} ajouté au GoogleSheet.")
-        await log_action(interaction.user.display_name, f"add ({member_name})")
-
-
     @app_commands.command(name="last", description="Affiche la dernière aide d'un membre ou le top 5", guild=discord.Object(id=GUILD_ID))
     async def last(self, interaction: discord.Interaction, member_name: str = None):
         records = worksheet.get_all_records()
@@ -340,16 +228,6 @@ class CommandesCog(commands.Cog):
 
             await interaction.response.send_message("\n".join(msg_lines))
         await log_action(interaction.user.display_name, "last")
-
-
-    @app_commands.command(name="shutdown", description="Débranche le bot (owner only)", guild=discord.Object(id=GUILD_ID))
-    async def shutdown(self, interaction: discord.Interaction):
-        if interaction.user.id != self.bot.owner_id:
-            await interaction.response.send_message("❌ Tu n'es pas autorisé à débrancher le bot.", ephemeral=True)
-            return
-        await interaction.response.send_message("Arrêt du Bot...")
-        await log_action(interaction.user.display_name, "shutdown")
-        await self.bot.close()
 
 
     @app_commands.command(name="new_message", description="Modifier un message automatique", guild=discord.Object(id=GUILD_ID))
@@ -448,73 +326,7 @@ class TaskCog(commands.Cog):
                     LAST_TRIGGER[f"arene_{h}"] = now.date()
                     logger.info(f"[ARENE] {now} → envoyé pour {h}h")
 
-    @tasks.loop(seconds=60)
-    async def petits_events(self):
-        """Annonce les petits évènements A/B ou les raids avec tolérance de 5min."""
-        now = dt.datetime.now(LOCAL_TZ)
-        week = game_week_number(reference_day=3)
-
-        # Paramètres
-        target_hour = 22 if is_summer_time(now) else 21
-        help_hour = 21
-        window_minutes = 5  # tolérance
-
-        window_start = dt.time(hour=target_hour, minute=0)
-        window_end   = dt.time(hour=target_hour, minute=window_minutes)
-
-        window_start_help = dt.time(hour=help_hour, minute=0)
-        window_end_help   = dt.time(hour=help_hour, minute=window_minutes)
-
-        in_window = window_start &lt;= now.time() &lt;= window_end
-        already_sent = LAST_TRIGGER_PETITS.get(week) == now.date()
-
-        in_window_help = window_start_help &lt;= now.time() &lt;= window_end_help
-        already_sent_help = LAST_TRIGGER_HELP.get(week) == now.date()
-
-        if in_window_help and not already_sent_help:
-            cycle = week % 4
-            if cycle == 0 or cycle == 2:
-                logger.info(f"[LOG] {now.strftime('%d/%m %H:%M')} → Envoi MP Raid Tempe")
-                try:
-                    await envoyer_mp(622365598797529141, MP_RAID_TEMPE)
-                    LAST_TRIGGER_HELP[week] = now.date()
-                except Exception as e:
-                    logger.error(f"[ERREUR] Envoi MP Raid Tempe: {e}")
-
-        if not in_window or already_sent:
-            return  # Rien à faire
-
-        # --- Détermination du cycle ---
-        cycle = week % 4
-        channel1 = bot.get_channel(ID_CHANNEL_TEMP)
-        channel2 = bot.get_channel(ID_CHANNEL_LUNA_NILE)
-
-        if not channel1 or not channel2:
-            logger.warning(f"[petits_events_safe] Impossible de trouver les salons {ID_CHANNEL_TEMP}/{ID_CHANNEL_LUNA_NILE}")
-            return
-
-        if cycle == 3:  # Petit A
-            logger.info(f"[LOG] {now.strftime('%d/%m %H:%M')} → Envoi Petit A")
-            await channel1.send("https://tenor.com/view/monster-musume-slime-gir-suu-spinning-gif-5311263")
-            await channel2.send("https://tenor.com/view/anime-ok-okay-okey-nice-gif-5996219900244854196")
-
-        elif cycle == 1:  # Petit B
-            logger.info(f"[LOG] {now.strftime('%d/%m %H:%M')} → Envoi Petit B")
-            await channel1.send("https://cdn.discordapp.com/attachments/1263303566014156830/1385355663500116098/Gif_Bianca_Cree_Par_Cloe_Le_30-10-2023.gif")
-            await channel2.send("https://cdn.discordapp.com/attachments/1263313810521980949/1375212172451516547/gdgegegeg.gif")
-
-        else:  # Semaine de Raid
-            msg = f"&lt;@&{ID_NILERIA}> "
-            msg += CUSTOM_MESSAGES["Raid Nileria"]
-            logger.info(f"[LOG] {now.strftime('%d/%m %H:%M')} → Envoi Raid")
-            await channel2.send(msg)
-
-        # Marqueur pour éviter les doublons
-        LAST_TRIGGER_PETITS[week] = now.date()
-
-
     @mam_arene_events.before_loop
-    @petits_events.before_loop
     async def before_loops(self):
         await self.bot.wait_until_ready()
 
@@ -557,7 +369,6 @@ class EventsCog(commands.Cog):
         mam_arene_events.start()
         petits_events.start()
         logger.info(f"[LOOP] mam_arene_events lancée: {mam_arene_events.is_running()}")
-        logger.info(f"[LOOP] petits_events lancée: {petits_events.is_running()}")
         guild = self.bot.get_guild(GUILD_ID)
 
         if guild:
