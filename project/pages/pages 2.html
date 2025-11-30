@@ -1,23 +1,334 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio</title>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio - Projets</title>
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/projet.css" />
 
-<div class ="Header">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <input
+      type="checkbox"
+      id="theme-toggle"
+      aria-label="checkbox dark mode"
+      hidden
+    />
+
+    <!-- Header -->
     <header>
-        <button popovertarget="menu" popovertargetaction="sho"><img src="../images/menu.webp" width="20"></img></button>
-        <nav popover id="menu">
-        <a href ="../index.html"> <p>Page 1</p></a>
-        <a href ="pages 3.html"> <p>Page 3</p></a>
-        <a href ="pages 4.html"> <p>Page 4</p></a>
-        </nav>
-    </header>
-</div>
+      <h1 class="logo">Portfolio</h1>
+      <nav>
+        <a href="../index.html">Accueil</a>
+        <a href="pages_2.html">Projets</a>
+        <a href="pages_3.html">À Propos</a>
+      </nav>
 
-<body>
+      <section class="header-right">
+        <a href="../index.html#contact" class="bouton-contact">Me Contacter</a>
+
+        <label for="theme-toggle" class="theme-icon">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </label>
+      </section>
+    </header>
+
+    <main id="projects-content">
+      <article class="project-grid">
+        <!-- Partie Gauche -->
+        <section class="project-info">
+          <h2 class="static-color">
+            <a href="Projets/Motus.html">Motus / Wordle</a>
+          </h2>
+          <p>
+            Ce projet est le premier projet effectué durant l'année de Licence
+            informatique. Il nous a permis de nous confronter à un problème plus
+            avancé qu'un simple exercice et nous a permis de nous remettre dans
+            le bain après plusieurs mois sans rien faire (ainsi que jauger notre
+            niveau). <br /><br />
+            Voici quelques lignes qui montrent ce projet. (+ d'information sur
+            la page du projet disponible en cliquant sur le nom du projet.)
+          </p>
+          <img src="../images/Wordle.png" alt="Image du Jeu Motus" />
+        </section>
+
+        <!-- Partie Droite -->
+        <section class="project-code">
+          <pre><code>
+  def Start():
+
+    liste = load_words(file)
+    dico = get_words_dict(liste)
     
-</body>
+    loop = 1
+    scoreT = {} 
+    flag = True
+    while flag:
+
+        diff = int(input("De 1 à 5, quelle est la difficulté dans laquelle tu veux jouer ? "))
+        if diff not in [1,2,3,4,5]:
+            diff = 3
+
+        opt_diff = {1:[15,8],2:[12,13],3:[9,18],4:[6,23],5:[3,28]}
+        max_tries=opt_diff[diff][0]
+        word_len=opt_diff[diff][1]
+
+        rword = random_word(randrange(word_len-5,word_len), dico)
+        count = 0
+        rep = ''
+        score=[]
+
+        print(f'Le mot à trouver possède {len(rword)} lettre(s)')
+
+        while max_tries>0 and rep!=rword:
+            rep = input("Quel mot essayes-tu ? ")
+            rep = rep.upper()
+
+            if rep in liste:
+                if len(rep) == len(rword):
+                    score.append(rep)
+                    lcheck = check_word(rword, rep)
+                    print(print_clues(rep, lcheck), "\n")
+                else: print("Le mot proposé ne possède pas le bon nombre de lettre(s)", "\n")
+            else: print("Le mot proposé n'existe pas", "\n")
+
+            if rword==rep:
+                break
+
+            max_tries-=1
+            count+=1
+            print("Il te reste", max_tries, "tentative(s).")
+
+        if max_tries==0 and rep!=rword:
+            print(f"Dommage... Le mot était {rword}. Mais tu réussiras peut-être la prochaine fois !")
+        else: print("Bien joué ! Tu as trouvé le mot en", count+1, "tentative(s). Voici le résumé de tes essais : \n", score)
+        scoreT[loop]=rword, score
+        loop+=1
+
+        retry=input("Si tu veux rejouer, écris 'oui' ! ")
+        if retry!='oui':
+            flag = False
+    
+    printscore = input("Si tu veux le récapitulatif de tes parties, écris 'oui' !\n")
+    if printscore == 'oui':
+        for i in scoreT:
+            print(f"Pour ta {i}e partie, le mot était {scoreT[i][0]} et tes tentatives ont étés : {scoreT[i][1]}. \n")
+          </code></pre>
+        </section>
+      </article>
+
+      <article class="project-grid">
+        <!-- Partie Gauche -->
+        <section class="project-info">
+          <h2 class="static-color">
+            <a href="Projets/Azul.html">Azul</a>
+          </h2>
+          <p>
+            Azul est un jeu de société dont le but est de gagner. Alors,
+            “évident” me diriez-vous, mais il existe peut-être des jeux où le
+            but est de perdre, ahAH ! Pour gagner, le joueur devra accumuler le
+            plus de points possible en piochant des tuiles sur le plateau de jeu
+            commun et en les plaçant sur son plateau, puis en les glissant sur
+            son mur motif. Je vais pas vous faire un dessin, ce projet était
+            vraiment challengeant, surtout la partie graphique qui m'a donné du
+            fil à retordre. <br /><br />
+            Voici quelques lignes qui montrent ce projet. (+ d'information sur
+            la page du projet disponible en cliquant sur le nom du projet.)
+          </p>
+          <img
+            src="../images/Azul4.png"
+            alt="Image montrant la boîte du Jeu de société Azul"
+          />
+          <img
+            src="../images/Azul2.jpg"
+            alt="Image montrant une partie du Jeu de société Azul"
+          />
+        </section>
+
+        <!-- Partie Droite -->
+        <section class="project-code">
+          <pre><code>
+  def main():
+    global current_player, selected_fabric, selected_tile
+
+    create_main_window()
+    init_game()
+
+    while not is_game_finished():
+        start_tour()
+        current_player = get_first_player()
+        draw_window()
+        show_popup_dialog("Début du tour : joueur " + str(current_player))
+
+        while not is_tour_finished():
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    # si on détecte un clic: chercher sur quel Rect on a cliqué
+                    # => ce qui nous permet de récupérer la tuile, et la fabrique correspondant
+                    selected_fabric, selected_tile = get_fabric_tile_on(
+                        event.pos[0], event.pos[1]
+                    )
+
+                    # ensuite, si une tuile a déjà été sélectionnée,
+                    # chercher sur quelle ligne du plateau on a cliqué.
+                    if selected_fabric != None:
+                        dest_raw = get_empty_line_on(event.pos[0], event.pos[1])
+
+                        # quand on a les 3 infos et que le coup est possible,
+                        # on peut jouer le coup et passer au joueur suivant.
+                        if check_tile(current_player, selected_tile, dest_raw):
+                            play(
+                                current_player,
+                                selected_fabric,
+                                selected_tile,
+                                dest_raw,
+                            )
+                            selected_fabric = None
+                            selected_tile = None
+                            dest_raw = None
+                            draw_window()
+                            current_player = (current_player + 1) % len(boards)
+
+            draw_window()
+
+        end_tour()
+        draw_window()
+    compute_final_scores()
+
+    show_popup_dialog(
+        "Partie terminée ! joueur 0: "
+        + str(scores[0])
+        + " / joueur 1: "
+        + str(scores[1])
+    )
+    pygame.quit()
+  </code></pre>
+        </section>
+      </article>
+
+      <article class="project-grid">
+        <!-- Partie Gauche -->
+        <section class="project-info">
+          <h2 class="static-color">
+            <a href="Projets/Discord_Bot.html">Bot Discord</a>
+          </h2>
+          <p>
+            Ce projet, hors programme et totalement personnel, m'a permis de
+            toucher à des modules de python auxquels je n'aurais jamais touché
+            en temps normal, m'a permis de prendre connaissance et d'acquérir
+            des aptitudes dans ce langage de programmation que je n'aurais pas
+            obtenu si je ne m'étais pas penché sur les robots qui nous
+            permettent tant de chose sur cette plateforme de discussion et de
+            jeux qui réunit les utilisateurs. J'ai également un peu touché à du
+            javascript, même si c'était que très peu. <br /><br />
+            Voici quelques lignes qui montrent ce projet. (+ d'information sur
+            la page du projet disponible en cliquant sur le nom du projet.)
+          </p>
+          <img
+            class="img-spe"
+            src="../images/DiscordBot1.png"
+            alt="Image montrant le profil d'un Robot Discord"
+          />
+          <img
+            class="img-spe"
+            src="../images/DiscordBot2.png"
+            alt="Image montrant les paramètres d'un Robot Discord"
+          />
+        </section>
+
+        <!-- Partie Droite -->
+        <section class="project-code">
+          <pre><code>
+import discord
+from discord.ext import commands
+from config import DISCORD_TOKEN, logger
+
+intents = discord.Intents.default()
+intents.messages = True
+intents.guilds = True
+intents.message_content = True
+intents.members = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+# Extensions à charger
+INITIAL_EXTENSIONS = [
+    "utils.utils",
+    "tasks.tasks",
+    "commands.commands",
+    "cogs.events",
+    "event.halloween"]
+
+for ext in INITIAL_EXTENSIONS:
+    try:
+        bot.load_extension(ext)
+        logger.info(f"[COG] {ext} chargé avec succès.")
+    except Exception as e:
+        logger.error(f"[COG] Erreur au chargement de {ext}: {e}")
+
+if __name__ == "__main__":
+    bot.run(DISCORD_TOKEN)
+                </code></pre>
+        </section>
+      </article>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <nav class="footer-links">
+        <a href="../index.html">Accueil</a>
+        <a href="pages_2.html">Projets</a>
+        <a href="pages_3.html">À Propos</a>
+      </nav>
+
+      <!-- Réseaux Sociaux -->
+      <section class="socials">
+        <a href="mailto:tonmailpro@domaine.com" aria-label="Envoyer un Mail">
+          <i class="fas fa-envelope"></i
+        ></a>
+        <a
+          href="https://github.com/AL-201"
+          target="_blank"
+          aria-label="Compte Github"
+        >
+          <i class="fab fa-github"></i
+        ></a>
+        <a
+          href="https://linkedin.com"
+          target="_blank"
+          aria-label="Page Linkedin"
+        >
+          <i class="fab fa-linkedin-in"></i
+        ></a>
+        <a
+          href="https://instagram.com"
+          target="_blank"
+          aria-label="Page Instagram"
+        >
+          <i class="fab fa-instagram"></i
+        ></a>
+      </section>
+
+      <p class="credits">
+        Privacy Policy · Legal · © 2025 Portfolio. All rights reserved.
+      </p>
+    </footer>
+  </body>
 </html>
