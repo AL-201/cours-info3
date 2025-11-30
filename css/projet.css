@@ -65,14 +65,14 @@
 
 .project-info img {
     display:block;
-    max-width: 60%;
+    max-width: 50%;
     height: auto;
     margin: 1rem auto 0;
     border-radius: 15px;
 }
 .project-info .img-spe {
     display:inline;
-    max-width: 49%;
+    max-width: 40%;
     height: auto;
     margin: 1rem auto 0;
     border-radius: 15px;
