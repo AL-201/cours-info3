@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio - Projets</title>
+    <link rel="stylesheet" href="../../css/variables.css" />
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <link rel="stylesheet" href="../../css/Individual_Project.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <input
+      type="checkbox"
+      id="theme-toggle"
+      aria-label="checkbox dark mode"
+      hidden
+    />
+
+    <!-- Header -->
+    <header>
+      <h1 class="logo">Portfolio</h1>
+      <nav>
+        <a href="../../index.html">Accueil</a>
+        <a href="../pages_2.html">Projets</a>
+        <a href="../pages_3.html">À Propos</a>
+      </nav>
+
+      <section class="header-right">
+        <a href="../../index.html#contact" class="bouton-contact"
+          >Me Contacter</a
+        >
+
+        <label for="theme-toggle" class="theme-icon">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </label>
+      </section>
+    </header>
+
+    <main class="Projet-Motus">
+      <section class="layout-projet">
+        <!-- Bloc Gauche : Explications -->
+        <aside class="projet-info">
+          <h2>Projet Motus</h2>
+          <p>PlaceHolder à remplir</p>
+        </aside>
+
+        <!-- Bloc Droit : Code (Duplicable) -->
+        <section class="projet-codes">
+          <article class="code-block">
+            <h3>Main Pogram</h3>
+            <pre><code>                   
+import unicodedata
+import re
+from random import *
+from time import *
+
+# word = unicodedata.normalize('NFKD', word).encode('ascii', 'ignore').decode('ascii')
+file = r"C:\Users\Alexiel\Desktop\Alexiel-CLOUD\Cours\! ULCO\Informatique 1\frenchDict.txt"
+
+
+def clean_word(w):
+    w = unicodedata.normalize('NFKD', w).encode('ascii', 'ignore').decode('ascii')
+    return re.sub('[^A-Z]', '', w.upper())
+
+
+def load_words(filename):
+    L = []
+    f = open(filename, "r", encoding="utf8")
+    for i in f:
+        L.append(clean_word(i))
+    return L
+
+#Liste = load_words(file)
+
+
+def get_words_dict(list):
+    dict = {}
+    for i in list:
+        if len(i) in dict:
+            dict[len(i)].append(i)
+        else: dict[len(i)]=[i]
+    dict = {k: v for k, v in sorted(dict.items(), key=lambda item: item[0])}
+    return dict
+
+#dico = get_words_dict(Liste)
+
+
+def random_word(n, dict):
+    word = dict[n][randrange(1,len(dict[n])+1)]
+    return word
+
+#lenght = randrange(1,26)
+#rword = random_word(lenght, dico)
+#print("Le mot fait", lenght,"lettre(s).", "Le mot est :", rword)
+
+
+def check_word(rword, wtry):
+    lrep = [-1] * len(rword)
+    rword_list = list(rword)
+
+    for j in range(2):
+        for i in range(len(rword)):
+            if j == 0:
+                if wtry[i] == rword[i]:
+                    lrep[i] = 1
+                    rword_list[i] = None
+            if j == 1:
+                if lrep[i] == -1 and wtry[i] in rword_list:
+                    lrep[i] = 0
+                    rword_list[rword_list.index(wtry[i])] = None
+    return lrep
+
+#wtry = input("Quel mot essayes-tu ? ")
+#lcheck = (check_word(rword, wtry))
+
+
+def print_clues(wtry, list):
+    clues = ""
+    for i in range(len(wtry)):
+        if list[i]==1:
+            clues+=(f"{wtry[i]} ")
+        if list[i]==0:
+            clues+=(f"({wtry[i]}) ")
+        if list[i]==-1:
+            clues+=("_ ")
+    return clues
+
+
+def Start():
+
+    liste = load_words(file)
+    dico = get_words_dict(liste)
+    
+    loop = 1
+    scoreT = {} 
+    flag = True
+    while flag:
+
+        diff = int(input("De 1 à 5, quelle est la difficulté dans laquelle tu veux jouer ? "))
+        if diff not in [1,2,3,4,5]:
+            diff = 3
+
+        opt_diff = {1:[15,8],2:[12,13],3:[9,18],4:[6,23],5:[3,28]}
+        max_tries=opt_diff[diff][0]
+        word_len=opt_diff[diff][1]
+
+        rword = random_word(randrange(word_len-5,word_len), dico)
+        count = 0
+        rep = ''
+        score=[]
+
+        print(f'Le mot à trouver possède {len(rword)} lettre(s)')
+
+        while max_tries>0 and rep!=rword:
+            rep = input("Quel mot essayes-tu ? ")
+            rep = rep.upper()
+
+            if rep in liste:
+                if len(rep) == len(rword):
+                    score.append(rep)
+                    lcheck = check_word(rword, rep)
+                    print(print_clues(rep, lcheck), "\n")
+                else: print("Le mot proposé ne possède pas le bon nombre de lettre(s)", "\n")
+            else: print("Le mot proposé n'existe pas", "\n")
+
+            if rword==rep:
+                break
+
+            max_tries-=1
+            count+=1
+            print("Il te reste", max_tries, "tentative(s).")
+
+        if max_tries==0 and rep!=rword:
+            print(f"Dommage... Le mot était {rword}. Mais tu réussiras peut-être la prochaine fois !")
+        else: print("Bien joué ! Tu as trouvé le mot en", count+1, "tentative(s). Voici le résumé de tes essais : \n", score)
+        scoreT[loop]=rword, score
+        loop+=1
+
+        retry=input("Si tu veux rejouer, écris 'oui' ! ")
+        if retry!='oui':
+            flag = False
+    
+    printscore = input("Si tu veux le récapitulatif de tes parties, écris 'oui' !\n")
+    if printscore == 'oui':
+        for i in scoreT:
+            print(f"Pour ta {i}e partie, le mot était {scoreT[i][0]} et tes tentatives ont étés : {scoreT[i][1]}. \n")
+    
+
+Start()
+                </code></pre>
+          </article>
+        </section>
+      </section>
+
+      <!-- Naviguation entre Projet -->
+      <nav class="project-nav-min2">
+        <a href="../pages_2.html" class="arrow-min">← Projet précédent</a>
+        <a href="Azul.html" class="arrow-min">Projet suivant →</a>
+      </nav>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <nav class="footer-links">
+        <a href="../../index.html">Accueil</a>
+        <a href="../pages_2.html">Projets</a>
+        <a href="../pages_3.html">À Propos</a>
+      </nav>
+
+      <!-- Réseaux Sociaux -->
+      <section class="socials">
+        <a href="mailto:tonmailpro@domaine.com" aria-label="Envoyer un Mail">
+          <i class="fas fa-envelope"></i
+        ></a>
+        <a
+          href="https://github.com/AL-201"
+          target="_blank"
+          aria-label="Compte Github"
+        >
+          <i class="fab fa-github"></i
+        ></a>
+        <a
+          href="https://linkedin.com"
+          target="_blank"
+          aria-label="Page Linkedin"
+        >
+          <i class="fab fa-linkedin-in"></i
+        ></a>
+        <a
+          href="https://instagram.com"
+          target="_blank"
+          aria-label="Page Instagram"
+        >
+          <i class="fab fa-instagram"></i
+        ></a>
+      </section>
+
+      <p class="credits">
+        Privacy Policy · Legal · © 2025 Portfolio. All rights reserved.
+      </p>
+    </footer>
+  </body>
+</html>
