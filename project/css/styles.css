@@ -1,0 +1,368 @@
+/**--- Transition Dark Mode ---**/
+* {
+  box-sizing: border-box;
+  transition: background-color 0.50s ease, color 0.50s ease, border-color 0.50s ease;
+}
+
+
+
+/**--- CSS Global ---**/
+html, body {
+  height: 100%;
+  margin:0;
+}
+body {
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height: 1.45;
+}
+.static-color{
+    color: var(--text) !important;
+}
+
+/* Containers Centraux */
+main, header, footer {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 3%;
+    background: var(--surface);
+}
+
+/* Nav Header */
+header nav {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+/* Animation Liens Header */
+header nav a {
+    position: relative; 
+    margin: 0 6px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 1.05rem;
+    cursor: pointer;
+    padding-bottom: 3px;
+    transition: color 0.4s ease;
+}
+header nav a::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1.5px;
+    width: 0%;
+    background-color: #656377;
+    transition: width 0.4s ease;
+}
+header nav a:hover {
+    color: #1e1e2b;
+}
+header nav a:hover::before {
+    width: 100%;
+}
+
+
+
+/* Header Right */
+header .header-right {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Portfolio Logo */
+.logo {
+    font-size: clamp(1.25rem, 2vw, 2rem);
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Bouton Contact */
+.bouton-contact {
+    background: var(--accent);
+    cursor: pointer;
+    transition: all 400ms;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+    border: none;position: relative;
+    overflow: hidden;
+    
+}
+/* Animation Bouton */
+.bouton-contact:hover {
+  color: #353535;
+  transform: scale(1.1);
+}
+.bouton-contact::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: #cfd3c3;
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 1000ms;
+}
+.bouton-contact:hover::before {
+  width: 250%;
+}
+
+/* Footer */
+footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 40px 0;
+}
+
+/* Nav Footer + Animation Liens */
+footer nav a {
+    position: relative; 
+    margin: 0 10px;
+    text-decoration: none;
+    color: white;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding-bottom: 3px;
+    transition: color 0.4s ease;
+}
+footer nav a::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1.5px;
+    width: 0%;
+    background-color: #d2d1df;
+    transition: width 0.4s ease;
+}
+footer nav a:hover::before {
+    width: 100%;
+}
+
+/* Boutons Réseaux Sociaux */
+.socials {
+    margin: 18px 0;
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.socials a {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border: 2px solid white;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.socials a:hover { transform: translateY(-3px); }
+
+/* Crédit */
+.credits {
+    margin-top: 12px;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+
+
+/**--- Dark Mode ---**/
+
+/* Theme Icone */
+.theme-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 18px;
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+}
+
+/* Icone Lune/Soleil au même endroit */
+.theme-icon i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Par défaut : Soleil visible, Lune cachée */
+.theme-icon i.fa-sun { opacity: 1; transform: translate(-50%, -50%) rotate(0deg); }
+.theme-icon i.fa-moon { opacity: 0; transform: translate(-50%, -50%) rotate(-30deg) scale(0.9); }
+
+/* Toogle du Dark Mode via checkbox */
+#theme-toggle:checked + header,
+#theme-toggle:checked ~ main,
+#theme-toggle:checked ~ footer {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+}
+
+/* Ajustements Dark Mode */
+#theme-toggle:checked + header { background: var(--surface-dark); }
+#theme-toggle:checked + header nav a { color: var(--text-dark); }
+#theme-toggle:checked ~ main { background: var(--bg-dark); color: var(--text-dark); }
+#theme-toggle:checked ~ main .presentation aside { background: var(--card-dark); }
+#theme-toggle:checked ~ main #contact form { background: var(--card-dark); }
+#theme-toggle:checked ~ main .project-grid .project-info { background: var(--card-dark); }
+#theme-toggle:checked ~ main .project-grid .project-info p {color: var(--text-dark); }
+#theme-toggle:checked ~ main .apropos header { background: var(--card-dark); }
+#theme-toggle:checked ~ main .competences header { background: var(--card-dark); }
+#theme-toggle:checked ~ footer { background: var(--surface-dark); color: var(--text-dark); }
+
+/* Changement d'opacité des Icones */
+#theme-toggle:checked + header .theme-icon i.fa-sun { opacity: 0; transform: translate(-50%, -50%) rotate(30deg) scale(0.9); }
+#theme-toggle:checked + header .theme-icon i.fa-moon { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+
+/* Harmonisation Typographie */
+h1, h2, h3, h4 {
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  color: inherit;
+  line-height: 1.1;
+}
+
+/* Global Sizes */
+h1 { font-size: clamp(1.35rem, 3vw, 2.2rem); }
+h2 { font-size: clamp(1.25rem, 2.4vw, 1.6rem); }
+p { font-size: clamp(0.95rem, 1.4vw, 1rem); color: var(--muted); margin: 0 0 14px 0; }
+
+/* Layout helpers */
+.container-centered {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+
+
+/**--- Responsive Spécifique ---**/
+
+/* Tablette */
+@media (max-width: 900px) {
+  
+    header {
+        padding: 24px 3%;
+    }
+    
+    header nav { 
+        display: none; 
+    } 
+    
+    header .header-right { 
+        gap: 10px; 
+    }
+    
+    .logo { 
+        font-size: 1.4rem; 
+    }
+
+    main, header, footer { 
+        padding-left: 16px; 
+        padding-right: 16px; 
+    }
+
+    /* Présentation Verticale */
+    .presentation {
+        flex-direction: column;
+        gap: 22px;
+        padding: 36px 0;
+    }
+
+    aside { 
+        width: 100%; 
+        order: 2; 
+    }
+    
+    .presentation article { 
+        max-width: 100%; 
+        order: 1; 
+    }
+
+    .grid-accueil { 
+        grid-template-columns: 1fr 1fr; 
+        padding: 0; 
+    }
+}
+
+/* Mobile small */
+@media (max-width: 600px) {
+    :root { 
+        --max-width: 940px; 
+    }
+
+    header { 
+        padding: 18px 1.5%; 
+    }
+  
+    .logo { 
+        font-size: 1.1rem; 
+    }
+  
+    .bouton-contact { 
+        padding: 8px 14px; 
+        font-size: 0.95rem; 
+    }
+
+    .presentation { 
+        padding: 24px 0; 
+        gap: 18px; 
+    }
+  
+    .grid-accueil { 
+        grid-template-columns: 1fr; 
+        gap: 12px; 
+    }    
+}
+
+/* Very small */
+@media (max-width: 400px) {
+
+    .theme-icon { 
+        width: 24px; 
+        height: 24px; 
+        font-size: 16px; 
+    }
+  
+    header .header-right { 
+        gap: 8px; 
+    }
+  
+    body { 
+        font-size: 14px; 
+    }
+}
