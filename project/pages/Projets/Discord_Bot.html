@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio - Projets</title>
+    <link rel="stylesheet" href="../../css/variables.css" />
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <link rel="stylesheet" href="../../css/Individual_Project.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <input
+      type="checkbox"
+      id="theme-toggle"
+      aria-label="checkbox dark mode"
+      hidden
+    />
+
+    <!-- Header -->
+    <header>
+      <h1 class="logo">Portfolio</h1>
+      <nav>
+        <a href="../../index.html">Accueil</a>
+        <a href="../pages_2.html">Projets</a>
+        <a href="../pages_3.html">À Propos</a>
+      </nav>
+
+      <section class="header-right">
+        <a href="../../index.html#contact" class="bouton-contact"
+          >Me Contacter</a
+        >
+
+        <label for="theme-toggle" class="theme-icon">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </label>
+      </section>
+    </header>
+
+    <main class="project-layout-special">
+      <!-- Ligne supérieure -->
+      <section class="top-row">
+        <section class="project-info-large">
+          <h2>Projet Bot Discord</h2>
+          <p>PlaceHolder à remplir</p>
+        </section>
+
+        <section class="project-main-code">
+          <h2>Main Program</h2>
+          <pre><code>
+import discord
+from discord.ext import commands
+from config import DISCORD_TOKEN, logger
+
+intents = discord.Intents.default()
+intents.messages = True
+intents.guilds = True
+intents.message_content = True
+intents.members = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+# Extensions à charger
+INITIAL_EXTENSIONS = [
+    "utils.utils",
+    "tasks.tasks",
+    "commands.commands",
+    "cogs.events",
+    "event.halloween"]
+
+for ext in INITIAL_EXTENSIONS:
+    try:
+        bot.load_extension(ext)
+        logger.info(f"[COG] {ext} chargé avec succès.")
+    except Exception as e:
+        logger.error(f"[COG] Erreur au chargement de {ext}: {e}")
+
+if __name__ == "__main__":
+    bot.run(DISCORD_TOKEN)
+            </code></pre>
+        </section>
+      </section>
+
+      <!-- Grille 4 blocs -->
+      <section class="code-grid">
+        <!-- 1er Bloc -->
+        <section class="code-block">
+          <h3>Partie Utils.py</h3>
+          <pre><code>
+from discord.ext import commands
+import discord
+import datetime as dt
+from datetime import datetime, timezone
+from pytz import timezone as tz
+import asyncio
+import json
+from config import logger, ALLOWED_HELPER_IDS, LOG_CHANNEL_ID
+
+# ============================
+# FONCTIONS GLOBALES
+# ============================
+
+# --- Setup ---
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix="!", intents=intents)
+LOCAL_TZ = tz("Europe/Paris")
+
+
+# --- Temps ---
+def is_summer_time(now: datetime) -> bool:
+    """Retourne True si heure d'été, False si heure d'hiver."""
+    return now.astimezone(LOCAL_TZ).dst() != dt.timedelta(0)
+
+def current_week_number() -> int:
+    """Retourne le numéro de semaine ISO (1 à 52)."""
+    return dt.date.today().isocalendar().week
+
+def game_week_number(reference_day=3) -> int:
+    """Retourne le numéro de semaine adapté au jeu."""
+    today = dt.date.today()
+    weekday = today.weekday()  # 0=lundi, 1=mardi, ..., 6=dimanche
+
+    iso_week = today.isocalendar().week
+
+    # Si on est avant le jeudi → on rattache encore au numéro de semaine précédent
+    if weekday &lt; reference_day:
+        iso_week -= 1
+
+    return iso_week
+
+
+# --- Messages ---
+def load_custom_messages():
+    global CUSTOM_MESSAGES
+    try:
+        with open("messages.json", "r", encoding="utf-8") as f:
+            CUSTOM_MESSAGES = json.load(f)
+            logger.info(f"[Load] : Messages Customs Load")
+    except FileNotFoundError:
+        pass
+    return CUSTOM_MESSAGES
+
+def save_custom_messages():
+    with open("messages.json", "w", encoding="utf-8") as f:
+        json.dump(CUSTOM_MESSAGES, f, ensure_ascii=False, indent=2)
+        logger.info(f"[Save] : Messages Customs Save")
+
+
+# --- GgSheet ---
+def normalize(name):
+    return str(name).strip().lower() if name is not None else ""
+
+pending_updates = {}
+
+def queue_update(member_name, helper_id, helper_name, date_obj):
+    """Ajoute ou met à jour la queue pour un membre"""
+    helper_name_clean = ALLOWED_HELPER_IDS.get(helper_id, helper_name)
+
+    if member_name in pending_updates:
+        # garder le plus récent
+        if date_obj > pending_updates[member_name]["date"]:
+            pending_updates[member_name] = {
+                "helper_id": helper_id,
+                "helper_name": helper_name_clean,
+                "date": date_obj,
+            }
+    else:
+        pending_updates[member_name] = {
+            "helper_id": helper_id,
+            "helper_name": helper_name_clean,
+            "date": date_obj,
+        }
+
+async def flush_updates(worksheet):
+    """Écrit toutes les mises à jour dans le Google Sheet"""
+    records = worksheet.get_all_records()
+    # Dictionnaire des membres existants pour lookup rapide
+    existing_members = {str(row.get("Nom")): idx+2 for idx, row in enumerate(records)}  # +2 car header
+
+    batch_data = []
+
+    for member_name, data in pending_updates.items():
+        helper_id = data["helper_id"]
+        helper_name = ALLOWED_HELPER_IDS.get(helper_id, data["helper_name"])
+        date_obj = data["date"]
+        local_time = date_obj.replace(tzinfo=timezone.utc).astimezone(LOCAL_TZ)
+        date_str = local_time.strftime("%d/%m/%Y %H:%M:%S")
+
+        if member_name in existing_members:
+            row_idx = existing_members[member_name]
+            batch_data.append({
+                "range": f"B{row_idx}:C{row_idx}",
+                "values": [[helper_name, date_str]]
+            })
+            logger.info(f"[SYNC] Mise à jour {member_name} ({helper_name} / {date_str})")
+        else:
+            batch_data.append({
+                "range": f"A{len(records)+2}:C{len(records)+2}",
+                "values": [[member_name, helper_name, date_str]]
+            })
+            logger.info(f"[SYNC] Ajout {member_name} ({helper_name} / {date_str})")
+
+    if batch_data:
+        worksheet.batch_update(batch_data)
+
+    pending_updates.clear()
+
+async def scan_thread(thread):
+    """Scan un thread pour trouver le dernier message d'un helper"""
+    last_helper_msg = None
+
+    async for msg in thread.history(limit=50):  # prend les 50 derniers messages
+        if msg.author.id in ALLOWED_HELPER_IDS:
+            last_helper_msg = msg
+            break  # le plus récent des helpers
+    if last_helper_msg:
+        queue_update(
+            thread.name,
+            last_helper_msg.author.id,
+            last_helper_msg.author.display_name,
+            last_helper_msg.created_at,
+        )
+
+
+# --- Discord ---
+async def log_action(user, command_name):
+    """Log toute commande utilisée"""
+    log_channel = bot.get_channel(LOG_CHANNEL_ID)
+    if log_channel:
+        now = datetime.now(LOCAL_TZ).strftime("%d/%m/%Y %H:%M:%S")
+        await log_channel.send(f"__{user}__ a utilisé **/{command_name}** le {now}")
+
+
+async def envoyer_mp(id_user, message):
+    user = await bot.fetch_user(id_user)
+    await user.send(message)
+            </code></pre>
+        </section>
+
+        <!-- 2eme Bloc -->
+        <section class="code-block">
+          <h3>Partie Commands.py</h3>
+          <pre><code>
+import discord
+from discord import app_commands
+from discord.ext import commands
+from datetime import datetime
+from config import logger, ADMIN_CHANNELS, TARGET_CHANNELS, worksheet, CUSTOM_MESSAGES, GUILD_ID
+from utils.utils import save_custom_messages, load_custom_messages, scan_thread, flush_updates, normalize, log_action
+
+# ============================
+# COMMANDS GLOBALES
+# ============================
+
+class CommandesCog(commands.Cog):
+    """Commandes slash (admin, info, messages)"""
+
+    def __init__(self, bot):
+        self.bot = bot
+    
+    @app_commands.command(name="check", description="Vérifie si le bot est en vie", guild=discord.Object(id=GUILD_ID))
+    async def check(self, interaction: discord.Interaction):
+        await interaction.response.send_message("✅ Le bot est branché !", ephemeral=True)
+        await log_action(interaction.user.display_name, "check")
+
+
+    @app_commands.command(name="resync", description="Force un resync complet des fils", guild=discord.Object(id=GUILD_ID))
+    async def resync(self, interaction: discord.Interaction):
+        if interaction.channel.id not in ADMIN_CHANNELS:
+            await interaction.response.send_message("❌ Commande autorisée uniquement dans le salon admin. ❌", ephemeral=True)
+            return
+        await interaction.response.defer()
+        guild = interaction.guild
+        for chan_id in TARGET_CHANNELS:
+            chan = guild.get_channel(chan_id)
+            if not chan:
+                continue
+            for thread in chan.threads:
+                await scan_thread(thread)
+            async for thread in chan.archived_threads(limit=50):
+                await scan_thread(thread)
+        await flush_updates(worksheet)
+        await interaction.followup.send("✅ Resync terminé !")
+        await log_action(interaction.user.display_name, "resync")
+
+
+    @app_commands.command(name="add", description="Ajoute un membre au GoogleSheet", guild=discord.Object(id=GUILD_ID))
+    async def add(self, interaction: discord.Interaction, member_name: str):
+        if interaction.channel.id not in ADMIN_CHANNELS:
+            await interaction.response.send_message("❌ Commande autorisée uniquement dans le salon admin. ❌", ephemeral=True)
+            return
+        worksheet.append_row([member_name, "", ""])
+        await interaction.response.send_message(f"✅ Membre {member_name} ajouté au GoogleSheet.")
+        await log_action(interaction.user.display_name, f"add ({member_name})")
+
+
+    @app_commands.command(name="last", description="Affiche la dernière aide d'un membre ou le top 5", guild=discord.Object(id=GUILD_ID))
+    async def last(self, interaction: discord.Interaction, member_name: str = None):
+        records = worksheet.get_all_records()
+        if member_name:
+            for row in records:
+                if normalize(row['Nom']) == normalize(member_name):
+                    await interaction.response.send_message(
+                        (f"- 📌  {row.get('Nom')} → a été aidé par {row['Helper']}, le {row['Date']}"))
+                    await log_action(interaction.user.display_name, f"last ({member_name})")
+                    return
+            await interaction.response.send_message(f"Aucune donnée trouvée pour {member_name}.")
+        else:
+            results = []
+            for row in records:
+                name = str(row.get("Nom"))
+                date_str = row.get("Date")
+                try:
+                    date_obj = datetime.strptime(date_str, "%d/%m/%Y %H:%M:%S")
+                    results.append((name, row.get("Helper"), date_obj))
+                except:
+                    continue
+
+            results.sort(key=lambda x: x[2])
+            top5 = results[:5]
+            if not top5:
+                await interaction.response.send_message("❌ Aucune donnée disponible.")
+                return
+
+            msg_lines = ["📋 **Les 5 personnes ayant la plus ancienne aide** :\n"]
+            for name, helper, date_obj in top5:
+                msg_lines.append(f"• **{name}** → par **{helper}** le __{date_obj.strftime('%d/%m/%Y %H:%M:%S')}__")
+
+            await interaction.response.send_message("\n".join(msg_lines))
+        await log_action(interaction.user.display_name, "last")
+
+
+    @app_commands.command(name="shutdown", description="Débranche le bot (owner only)", guild=discord.Object(id=GUILD_ID))
+    async def shutdown(self, interaction: discord.Interaction):
+        if interaction.user.id != self.bot.owner_id:
+            await interaction.response.send_message("❌ Tu n'es pas autorisé à débrancher le bot.", ephemeral=True)
+            return
+        await interaction.response.send_message("Arrêt du Bot...")
+        await log_action(interaction.user.display_name, "shutdown")
+        await self.bot.close()
+
+
+    @app_commands.command(name="new_message", description="Modifier un message automatique", guild=discord.Object(id=GUILD_ID))
+    @app_commands.describe(key="Clé du message",text="Nouveau message")
+    async def new_message(self, interaction: discord.Interaction, key: str, text: str):
+        if key not in CUSTOM_MESSAGES:
+            await interaction.response.send_message(
+                f"❌ Clé invalide. Choisissez parmi : {', '.join(CUSTOM_MESSAGES.keys())}",
+                ephemeral=True
+            )
+            return
+
+        CUSTOM_MESSAGES[key] = text
+        save_custom_messages()
+        await interaction.response.send_message(f"✅ Message `{key}` modifié avec succès !", ephemeral=True)
+
+    @new_message.autocomplete("key")
+    async def new_message_autocomplete(self, interaction: discord.Interaction,current: str) -> list[app_commands.Choice[str]]:
+        return [
+            app_commands.Choice(name=k, value=k)
+            for k in CUSTOM_MESSAGES.keys()
+            if current.lower() in k.lower()
+        ][:25]
+    
+
+async def setup(bot):
+    await bot.add_cog(CommandesCog(bot))
+            </code></pre>
+        </section>
+
+        <!-- 3eme Bloc -->
+        <section class="code-block">
+          <h3>Partie Tasks.py (Automatique)</h3>
+          <pre><code>
+from discord.ext import commands, tasks
+import datetime as dt
+from config import logger, ID_CHANNEL_PVP, ID_MAM, ID_ARENE, CUSTOM_MESSAGES,ID_CHANNEL_LUNA_NILE, ID_CHANNEL_TEMP, ID_NILERIA, MP_RAID_TEMPE
+from utils.utils import bot, LOCAL_TZ, is_summer_time, game_week_number, current_week_number, envoyer_mp
+from state import LAST_TRIGGER, LAST_TRIGGER_HELP, LAST_TRIGGER_PETITS
+
+# ============================
+# TASKS GLOBALES
+# ============================
+
+
+class TaskCog(commands.Cog):
+    """Boucles principales (mam_arene, petits events...)"""
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.mam_arene_events.start()
+        self.petits_events.start()
+        logger.info("Tâches périodiques initialisées.")
+
+
+    @tasks.loop(seconds=60)
+    async def mam_arene_events(self):
+        now = dt.datetime.now(LOCAL_TZ)
+        week = current_week_number()
+
+        # --- Paramètres ---
+        target_mam_hours = [12, 19] if not is_summer_time(now) else [13, 20]
+        target_arene_hours = [13, 20] if not is_summer_time(now) else [14, 21]
+        window_minutes = 5   # tolérance
+
+        def should_trigger(event_key, target_hour):
+            """Vérifie si on est dans la bonne fenêtre et si pas déjà exécuté."""
+            window_start = dt.time(hour=target_hour, minute=0)
+            window_end   = dt.time(hour=target_hour, minute=window_minutes)
+            in_window = window_start &lt;= now.time() &lt;= window_end
+            already_sent = LAST_TRIGGER.get(event_key) == now.date()
+            return in_window and not already_sent
+
+        channel = bot.get_channel(ID_CHANNEL_PVP)
+        if not channel:
+            logger.warning(f"[MAM/ARENE] Salon {ID_CHANNEL_PVP} introuvable")
+            return
+
+        # --- Cas MàM ---
+        if week % 2 == 1:
+            for h in target_mam_hours:
+                if should_trigger(f"mam_{h}", h):
+                    msg = f"&lt;@&{ID_MAM}> "
+                    msg += CUSTOM_MESSAGES["Match à Mort (Matin)"] if h == target_mam_hours[0] else CUSTOM_MESSAGES["Match à Mort (Soir)"]
+                    await channel.send(msg)
+                    LAST_TRIGGER[f"mam_{h}"] = now.date()
+                    logger.info(f"[MAM] {now} → envoyé pour {h}h")
+
+        # --- Cas Arène ---
+        else:
+            for h in target_arene_hours:
+                if should_trigger(f"arene_{h}", h):
+                    msg = f"&lt;@&{ID_ARENE}> "
+                    msg += CUSTOM_MESSAGES["Arène (Matin)"] if h == target_arene_hours[0] else CUSTOM_MESSAGES["Arène (Soir)"]
+                    await channel.send(msg)
+                    LAST_TRIGGER[f"arene_{h}"] = now.date()
+                    logger.info(f"[ARENE] {now} → envoyé pour {h}h")
+
+    @tasks.loop(seconds=60)
+    async def petits_events(self):
+        """Annonce les petits évènements A/B ou les raids avec tolérance de 5min."""
+        now = dt.datetime.now(LOCAL_TZ)
+        week = game_week_number(reference_day=3)
+
+        # Paramètres
+        target_hour = 22 if is_summer_time(now) else 21
+        help_hour = 21
+        window_minutes = 5  # tolérance
+
+        window_start = dt.time(hour=target_hour, minute=0)
+        window_end   = dt.time(hour=target_hour, minute=window_minutes)
+
+        window_start_help = dt.time(hour=help_hour, minute=0)
+        window_end_help   = dt.time(hour=help_hour, minute=window_minutes)
+
+        in_window = window_start &lt;= now.time() &lt;= window_end
+        already_sent = LAST_TRIGGER_PETITS.get(week) == now.date()
+
+        in_window_help = window_start_help &lt;= now.time() &lt;= window_end_help
+        already_sent_help = LAST_TRIGGER_HELP.get(week) == now.date()
+
+        if in_window_help and not already_sent_help:
+            cycle = week % 4
+            if cycle == 0 or cycle == 2:
+                logger.info(f"[LOG] {now.strftime('%d/%m %H:%M')} → Envoi MP Raid Tempe")
+                try:
+                    await envoyer_mp(622365598797529141, MP_RAID_TEMPE)
+                    LAST_TRIGGER_HELP[week] = now.date()
+                except Exception as e:
+                    logger.error(f"[ERREUR] Envoi MP Raid Tempe: {e}")
+
+        if not in_window or already_sent:
+            return  # Rien à faire
+
+        # --- Détermination du cycle ---
+        cycle = week % 4
+        channel1 = bot.get_channel(ID_CHANNEL_TEMP)
+        channel2 = bot.get_channel(ID_CHANNEL_LUNA_NILE)
+
+        if not channel1 or not channel2:
+            logger.warning(f"[petits_events_safe] Impossible de trouver les salons {ID_CHANNEL_TEMP}/{ID_CHANNEL_LUNA_NILE}")
+            return
+
+        if cycle == 3:  # Petit A
+            logger.info(f"[LOG] {now.strftime('%d/%m %H:%M')} → Envoi Petit A")
+            await channel1.send("https://tenor.com/view/monster-musume-slime-gir-suu-spinning-gif-5311263")
+            await channel2.send("https://tenor.com/view/anime-ok-okay-okey-nice-gif-5996219900244854196")
+
+        elif cycle == 1:  # Petit B
+            logger.info(f"[LOG] {now.strftime('%d/%m %H:%M')} → Envoi Petit B")
+            await channel1.send("https://cdn.discordapp.com/attachments/1263303566014156830/1385355663500116098/Gif_Bianca_Cree_Par_Cloe_Le_30-10-2023.gif")
+            await channel2.send("https://cdn.discordapp.com/attachments/1263313810521980949/1375212172451516547/gdgegegeg.gif")
+
+        else:  # Semaine de Raid
+            msg = f"&lt;@&{ID_NILERIA}> "
+            msg += CUSTOM_MESSAGES["Raid Nileria"]
+            logger.info(f"[LOG] {now.strftime('%d/%m %H:%M')} → Envoi Raid")
+            await channel2.send(msg)
+
+        # Marqueur pour éviter les doublons
+        LAST_TRIGGER_PETITS[week] = now.date()
+
+
+    @mam_arene_events.before_loop
+    @petits_events.before_loop
+    async def before_loops(self):
+        await self.bot.wait_until_ready()
+
+async def setup(bot):
+    await bot.add_cog(TaskCog(bot))
+            </code></pre>
+        </section>
+
+        <!-- 4eme Bloc -->
+        <section class="code-block">
+          <h3>Partie Event.py</h3>
+          <pre><code>
+import discord
+from discord.ext import commands
+from config import logger, GUILD_ID, TARGET_CHANNELS, worksheet, ALLOWED_HELPER_IDS
+from utils.utils import load_custom_messages, scan_thread, flush_updates
+from tasks.tasks import mam_arene_events, petits_events
+
+# ============================
+# EVENTS GLOBALS
+# ============================
+
+
+class EventsCog(commands.Cog):
+    """Événements Discord globaux"""
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        logger.info(f"[BOT] Connecté en tant que {self.bot.user}")
+        global CUSTOM_MESSAGES
+        CUSTOM_MESSAGES = load_custom_messages()
+        logger.info(f"[READY] Messages personnalisés chargés : {CUSTOM_MESSAGES}")
+        await self.bot.change_presence(
+            activity=discord.Game(name="Écouter les murmures des membres."),
+            status=discord.Status.online)
+        await self.bot.tree.sync(guild=discord.Object(id=GUILD_ID))
+        mam_arene_events.start()
+        petits_events.start()
+        logger.info(f"[LOOP] mam_arene_events lancée: {mam_arene_events.is_running()}")
+        logger.info(f"[LOOP] petits_events lancée: {petits_events.is_running()}")
+        guild = self.bot.get_guild(GUILD_ID)
+
+        if guild:
+            logger.info(f"[BOT] Resync initial sur {guild.name}...")
+            for chan_id in TARGET_CHANNELS:
+                chan = guild.get_channel(chan_id)
+                if not chan:
+                    continue
+                # fils actifs
+                for thread in chan.threads:
+                    await scan_thread(thread)
+                # fils archivés récents
+                async for thread in chan.archived_threads(limit=50):
+                    await scan_thread(thread)
+        await flush_updates(worksheet)
+        logger.info("[BOT] Prêt ✅")
+
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        # ignorer les bots
+        if message.author.bot:
+            return
+        # uniquement si message dans un fil concerné
+        if isinstance(message.channel, discord.Thread):
+            parent = message.channel.parent
+            if parent and parent.id in TARGET_CHANNELS:
+                if message.author.id in ALLOWED_HELPER_IDS:
+                    await scan_thread(message.channel)
+                    await flush_updates(worksheet)
+
+        await self.bot.process_commands(message)
+
+
+async def setup(bot):
+    await bot.add_cog(EventsCog(bot))
+            </code></pre>
+        </section>
+      </section>
+
+      <!-- Naviguation entre Projet -->
+      <nav class="project-nav-min">
+        <a href="Azul.html" class="arrow-min">← Projet précédent</a>
+        <a href="../pages_2.html" class="arrow-min">Projet suivant →</a>
+      </nav>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <nav class="footer-links">
+        <a href="../../index.html">Accueil</a>
+        <a href="../pages_2.html">Projets</a>
+        <a href="../pages_3.html">À Propos</a>
+      </nav>
+
+      <!-- Réseaux Sociaux -->
+      <section class="socials">
+        <a href="mailto:tonmailpro@domaine.com" aria-label="Envoyer un Mail">
+          <i class="fas fa-envelope"></i
+        ></a>
+        <a
+          href="https://github.com/AL-201"
+          target="_blank"
+          aria-label="Compte Github"
+        >
+          <i class="fab fa-github"></i
+        ></a>
+        <a
+          href="https://linkedin.com"
+          target="_blank"
+          aria-label="Page Linkedin"
+        >
+          <i class="fab fa-linkedin-in"></i
+        ></a>
+        <a
+          href="https://instagram.com"
+          target="_blank"
+          aria-label="Page Instagram"
+        >
+          <i class="fab fa-instagram"></i
+        ></a>
+      </section>
+
+      <p class="credits">
+        Privacy Policy · Legal · © 2025 Portfolio. All rights reserved.
+      </p>
+    </footer>
+  </body>
+</html>
