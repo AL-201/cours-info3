@@ -1,0 +1,128 @@
+/**--- Grille Principale ---**/
+.project-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: stretch;
+    padding: 48px 0;
+}
+
+
+
+/**--- Bloc Gauche ---**/
+.project-info {
+    background: var(--card);
+    padding: 1.6rem;
+    border-radius: 25px;
+    max-height: 600px;
+}
+
+/* Titre Projet */
+.project-info h2 {
+    text-align: center;
+    margin: 0 6px;
+    font-size: 1.25rem;
+}
+/* Animations Titre-Liens */
+.project-info h2 a {
+    position: relative; 
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    padding-bottom: 3px;
+    margin-bottom: 0.6rem;
+    transition: color 0.4s ease;
+}
+.project-info h2 a::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1.5px;
+    width: 0%;
+    background-color: #656377;
+    transition: width 0.4s ease;
+}
+.project-info h2 a:hover {
+    color: #1e1e2b;
+}
+.project-info h2 a:hover::before {
+    width: 100%;
+}
+
+
+/* Disposition Image */
+.project-info h2 > a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.project-info p {
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+    text-align: justify;
+}
+
+.project-info img {
+    display:block;
+    max-width: 60%;
+    height: auto;
+    margin: 1rem auto 0;
+    border-radius: 15px;
+}
+.project-info .img-spe {
+    display:inline;
+    max-width: 49%;
+    height: auto;
+    margin: 1rem auto 0;
+    border-radius: 15px;
+}
+
+
+/**--- Bloc Droite ---**/
+.project-code {
+    background: #353434;
+    color: #e4e4e4;
+    font-family: "Fira Code", monospace;
+    padding: 1rem;
+    border-radius: 25px;
+    border: 1px solid #333;
+    min-height: 0;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.project-code pre {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+
+
+/**--- Responsive Spécifique ---**/
+@media (max-width: 900px) {
+    .project-grid { 
+        grid-template-columns: 1fr; 
+        gap: 1.25rem; 
+        padding: 28px 0; 
+    }
+    
+    .project-code { 
+        max-height: 320px; 
+    }
+}
+
+/* small screens */
+@media (max-width: 600px) {
+    .project-grid { 
+        padding: 16px 0; 
+        gap: 1rem; 
+    }
+    
+    .project-code { 
+        max-height: 260px; 
+        padding: 0.8rem; 
+    }
+}
