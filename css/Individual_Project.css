@@ -136,9 +136,10 @@ pre {
 
 /* ----- DARK MODE ----- */
 #theme-toggle:checked ~ main.project-layout-special .project-main-code,
-#theme-toggle:checked ~ main.project-layout-special .code-block {
+#theme-toggle:checked ~ main.project-layout-special .code-block,
+#theme-toggle:checked ~ main .code-block {
     background: var(--card-dark);
-    color: var(--text);
+    color: var(--text-dark);
 }
 #theme-toggle:checked ~ main.project-layout-special h3,
 #theme-toggle:checked ~ main.project-layout-special h2 {
