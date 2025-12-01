@@ -13,5 +13,6 @@
   --bg-dark: #15171a; /* Bkgd DarkMode */
   --text-dark: #f3ecec; /* "Titre" DarkMode */
   --surface-dark: #1e1e1e; /* BkGd 2 Dark Mode */
-  --card-dark: #57656b; /* Grille Dark Mode */
+  --card-dark: #3d474b; /* Grille Dark Mode */
+  --card-dark2: #475f69; /* Grille 2 Dark Mode */
 }
