@@ -249,6 +249,8 @@ footer nav a:hover::before {
 #theme-toggle:checked ~ main .apropos header { background: var(--card-dark); }
 #theme-toggle:checked ~ main .competences header { background: var(--card-dark); }
 #theme-toggle:checked ~ footer { background: var(--surface-dark); color: var(--text-dark); }
+#theme-toggle:checked ~ main .grid-accueil .card { background: var(--card-dark2); color: white; }
+
 
 /* Changement d'opacité des Icones */
 #theme-toggle:checked + header .theme-icon i.fa-sun { opacity: 0; transform: translate(-50%, -50%) rotate(30deg) scale(0.9); }
