@@ -197,6 +197,12 @@ aside {
     aside, .presentation article {
         width: 100%;
     }
+    .presentation article {
+        max-width: 90% !important;
+        margin: 0 auto;
+        padding-left: 5%;
+        padding-right: 5%;
+    }
 
     .grid-accueil { 
         grid-template-columns: 1fr 1fr; 
