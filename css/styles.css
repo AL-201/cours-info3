@@ -288,10 +288,6 @@ p { font-size: clamp(0.95rem, 1.4vw, 1rem); color: var(--muted); margin: 0 0 14p
         padding: 24px 3%;
     }
     
-    header nav { 
-        display: none; 
-    } 
-    
     header .header-right { 
         gap: 10px; 
     }
@@ -337,9 +333,14 @@ p { font-size: clamp(0.95rem, 1.4vw, 1rem); color: var(--muted); margin: 0 0 14p
     header { 
         padding: 18px 1.5%; 
     }
+
+    header nav a { 
+        font-size:medium;
+        margin:0;
+    } 
   
     .logo { 
-        font-size: 1.1rem; 
+        display: none; 
     }
   
     .bouton-contact { 
