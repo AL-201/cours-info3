@@ -248,10 +248,21 @@ pre {
 
     .layout-projet {
         flex-direction: column;
+        margin:0;
     }
 
     .projet-info, .projet-codes {
         width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin-left:0 !important;
+        margin-right:0 !important;
+    }
+    .projet-info {
+        order: 1;
+    }
+    .projet-codes {
+        order: 2;
     }
 
     .code-block {
