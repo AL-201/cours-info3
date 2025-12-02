@@ -54,7 +54,28 @@
       <section class="top-row">
         <section class="project-info-large">
           <h2>Projet Bot Discord</h2>
-          <p>PlaceHolder à remplir</p>
+          <p>
+            Le bot Discord est initialisé avec les "intents essentiels" pour lire les messages, 
+            accéder aux guildes et suivre le contenu des messages, en chargeant automatiquement 
+            les extensions définies dans INITIAL_EXTENSIONS et en loggant leur succès ou erreur, 
+            tandis que des fonctions utilitaires globales gèrent la temporalité (numéro de semaine 
+            ISO, heure d'été), le stockage et la récupération des messages personnalisés via JSON, 
+            ainsi que l'envoi et le logging des actions sur Discord, garantissant une traçabilité 
+            complète.<br>
+            Les commandes slash globales encapsulées dans CommandesCog permettent de vérifier la 
+            disponibilité du bot, d'afficher les dernières aides de membres avec tri par date, et 
+            de modifier dynamiquement des messages automatiques avec autocomplétions, tout en 
+            consignant chaque utilisation.<br>
+            Les tâches récurrentes définies dans TaskCog orchestrent les événements réguliers comme 
+            mam_arene_events et petits_events, en respectant les heures spécifiques selon l'heure 
+            d'été/d'hiver et en s'assurant de ne pas répéter inutilement les notifications via des 
+            marqueurs de trigger, avec un démarrage conditionné à la préparation du bot.<br>
+            Enfin, EventsCog supervise les événements Discord globaux, initialisant le bot à la 
+            connexion, chargeant les messages personnalisés, synchronisant les slash commands et 
+            parcourant les threads actifs et archivés pour appliquer les mises à jour, tout en filtrant 
+            les messages pour n'agir que sur les participants autorisés, garantissant ainsi une logique 
+            centralisée, cohérente et robuste pour l'ensemble du système de gestion, de commandes et 
+            d'événements du bot.</p>
         </section>
 
         <section class="project-main-code">
