@@ -22,6 +22,7 @@
     border-radius: 12px;
     height: auto;
     margin-left: 40px;
+    overflow-y: auto;
 }
 
 /* Dark mode */
