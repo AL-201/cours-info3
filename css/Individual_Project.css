@@ -24,11 +24,11 @@
     margin-left: 40px;
 }
 
-.Projet-Motus .project-info . {
+.Projet-Motus .project-info {
     max-height: 300px;
     overflow-y: auto;
 }
-.Projet-Azul .project-info . {
+.Projet-Azul .project-info {
     max-height: 1260px;
     overflow-y: auto;
 }
