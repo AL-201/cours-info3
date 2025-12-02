@@ -54,7 +54,75 @@
         <!-- Bloc Gauche : Explications -->
         <aside class="projet-info">
           <h2>Projet Azul</h2>
-          <p>PlaceHolder à remplir</p>
+          <p>
+            L'ensemble de ce Projet repose sur un important fichier de constantes définissant le 
+            coeur des éléments manipulés par la logique du jeu Azul.<br>
+            On y trouve d'abord toutes les structures globales partagées par les joueurs : le sac 
+            de tuiles contenant les différentes couleurs et leurs quantités initiales, les fabriques 
+            organisées dynamiquement selon le nombre de joueurs, la zone centrale et la défausse, 
+            ainsi que les informations liées au tour en cours, à l'ordre du premier joueur et aux 
+            scores.<br>
+            À côté de cela, chaque joueur possède ses propres structures :<br>
+            un motif composé de cinq lignes de tailles croissantes, un mur de cinq lignes et cinq 
+            colonnes, et une ligne de plancher pour les pénalités. On y trouve également les constantes 
+            utiles à la mécanique du jeu, comme les points de pénalité du plancher, la liste des 
+            couleurs disponibles et les matrices représentant la disposition fixe des couleurs 
+            dans le mur.<br>
+            Toutes ces constantes sont regroupées dans des dictionnaires permettant d'accéder 
+            facilement aux structures d'un joueur donné.<br><br>
+            Le moteur du jeu, Azul_Engine, commence par initialiser toutes ces structures.<br>
+            L'initialisation crée le sac rempli de 20 tuiles de chaque couleur, génère les fabriques 
+            selon le nombre de joueurs, et construit pour chaque joueur un motif vide, un mur entièrement 
+            vide, un plancher initialisé à None et un score à zéro.<br>
+            Le début d'un nouveau tour consiste à réinitialiser le premier joueur, remplir les 
+            fabriques avec quatre tuiles aléatoires chacune, piochées dans le sac ou dans la défausse 
+            si le sac est vide, puis incrémenter le compteur de tours.<br>
+            La gestion du sac prévoit son réapprovisionnement automatique à partir de la défausse, 
+            ainsi que la distribution correcte des tuiles dans les fabriques. Le moteur fournit ensuite 
+            toutes les opérations nécessaires au prélèvement des tuiles dans une fabrique ou au centre 
+            de la table, en transférant les tuiles restantes vers la zone centrale, en comptant correctement 
+            le nombre de tuiles d'une couleur choisie, et en permettant au joueur de placer ses tuiles 
+            dans la ligne de motif sélectionnée ou dans le plancher lorsque la ligne n'est pas adaptée.<br><br>
+            Le calcul des scores repose sur plusieurs fonctions dédiées. Une fois une ligne de motif 
+            remplie, la tuile correspondante est transférée sur le mur à l'emplacement déterminé par la 
+            couleur et la ligne, puis les autres tuiles excédentaires partent à la défausse.<br>
+            L'ajout de score se fait en inspectant les lignes horizontales et verticales pour compter 
+            les tuiles adjacentes. On calcule ainsi le score acquis pour la pose d'une nouvelle tuile en 
+            distinguant les configurations où une seule tuile est alignée de celles qui forment une ligne 
+            ou une colonne plus longue.<br>
+            Les malus du plancher sont appliqués en fin de tour selon les positions remplies, avec une 
+            gestion particulière pour la tuile déterminant le premier joueur du tour suivant.<br>
+            Le moteur fournit également toutes les vérifications indispensables :<br>
+            validation du coup joué, détection si un motif est plein, si une fabrique est vide, si le 
+            tour est terminé ou si la partie s'arrête lorsqu'un joueur complète une ligne entière de son mur.<br>
+            Une fois la partie terminée, le moteur distribue les bonus finaux liés aux lignes complètes, 
+            colonnes complètes et collections d'une même couleur sur le mur.<br><br>
+            La partie graphique s'appuie sur Pygame pour afficher les panneaux individuels des joueurs ainsi 
+            que la zone centrale contenant les fabriques. Elle charge toutes les images des tuiles, des chevrons, 
+            du marqueur de joueur et des icônes nécessaires à l'interface.<br>
+            La fenêtre principale est initialisée avec une police standard et un canvas de 1200 par 800 pixels.
+            Une série de fonctions assure ensuite le dessin de tous les éléments :<br>
+            rectangles représentant les emplacements disponibles, tuiles individuelles avec transparence optionnelle, 
+            fabrique entourée de son cercle visuel, cadres autour du plateau d'un joueur, affichage du nom et 
+            du score, ainsi que la mise en valeur des éléments sélectionnables via un contour rouge lors du survol.<br>
+            La gestion de l'affichage est suffisamment modulaire pour dessiner soit une tuile isolée, soit un 
+            groupe en ligne ou en grille, selon le type d'élément affiché. Le module graphique inclut également 
+            une fonctionnalité d'affichage de pop-ups permettant de transmettre des messages aux joueurs, qui 
+            se ferment lorsqu'on clique sur un bouton dédié.<br><br>
+            Le programme principal orchestre toute la boucle de jeu. Il initialise la fenêtre graphique et 
+            l'état du jeu, puis démarre les tours successifs tant qu'aucune condition de fin n'est atteinte.<br>
+            À chaque tour, il identifie le joueur qui doit commencer, affiche une pop-up de début de tour, puis 
+            entre dans une boucle d'événements qui écoute les clics de souris. Lorsqu'un clic est détecté, le 
+            programme détermine s'il concerne une tuile d'une fabrique ou de la zone centrale, puis, si une tuile 
+            est sélectionnée, il vérifie si le clic suivant correspond à une ligne de motif ou au plancher.<br>
+            Si toutes les conditions sont réunies et que le mouvement est valide, la logique du moteur est invoquée 
+            pour prélever les tuiles, les placer correctement, vider la fabrique utilisée et passer au joueur suivant.<br>
+            L'ensemble est continuellement redessiné pour garantir une interface fluide. Une fois que plus aucune 
+            tuile n'est disponible dans les fabriques et le centre, le tour se termine, les scores sont mis à jour, 
+            les planchers remis à zéro, et un nouveau tour commence.<br>
+            Lorsque la partie se termine, les scores finaux sont calculés, une pop-up annonce les résultats, et 
+            l'application Pygame se ferme proprement.
+          </p>
         </aside>
 
         <!-- Bloc Droit : Code (Duplicable) -->
