@@ -22,9 +22,12 @@
     border-radius: 12px;
     height: auto;
     margin-left: 40px;
-    overflow-y: auto;
 }
 
+.Projet-Motus .project-info . {
+    max-height: 300px;
+    overflow-y: auto;
+}
 /* Dark mode */
 #theme-toggle:checked ~ main .projet-info {
     background: var(--surface-dark);
