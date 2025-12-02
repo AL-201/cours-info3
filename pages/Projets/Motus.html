@@ -54,7 +54,27 @@
         <!-- Bloc Gauche : Explications -->
         <aside class="projet-info">
           <h2>Projet Motus</h2>
-          <p>PlaceHolder à remplir</p>
+          <p>
+            Ce programme permet de jouer à un jeu solo, nommée Worlde, ou Motus en français. <br><br>
+            Il commence par charger un dictionnaire de mots français, puis les nettoie pour 
+            retirer accents, caractères indésirables et uniformiser la mise en forme. Les mots 
+            sont ensuite classés par longueur, ce qui me permet de facilement sélectionner un 
+            mot aléatoire adapté au niveau de difficulté choisi par l’utilisateur.<br><br>
+            Le coeur du jeu repose sur une fonction qui compare la tentative du joueur au mot 
+            à deviner : <br>
+            elle identifie les lettres bien placées, celles présentes ailleurs dans le mot et 
+            celles qui n’y figurent pas. Une autre fonction transforme ces informations en 
+            indices lisibles pour guider le joueur, remplaçant donc par un -1, un 0 ou un 1 
+            selon si c'est une bonne lettre, présente ou non dans le mot.<br><br>
+            La fonction principale organise le déroulement de la partie : <br>
+            choix de la difficulté, sélection du mot, vérification des propositions, affichage 
+            des indices et gestion du nombre d’essais restants.<br>
+            À la fin, le programme indique si le joueur a trouvé le mot et peut afficher un 
+            résumé complet de ses tentatives.<br><br>
+            Ce projet illustre la manière de structurer un petit jeu interactif en Python, 
+            de manipuler des fichiers texte et de mettre en place une logique de comparaison 
+            entre chaînes de caractères.
+          </p>
         </aside>
 
         <!-- Bloc Droit : Code (Duplicable) -->
