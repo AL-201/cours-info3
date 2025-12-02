@@ -28,6 +28,12 @@
     max-height: 300px;
     overflow-y: auto;
 }
+.Projet-Azul .project-info . {
+    max-height: 1260px;
+    overflow-y: auto;
+}
+
+
 /* Dark mode */
 #theme-toggle:checked ~ main .projet-info {
     background: var(--surface-dark);
