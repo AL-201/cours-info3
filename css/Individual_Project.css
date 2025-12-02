@@ -20,17 +20,15 @@
     background: var(--surface);
     padding: 22px;
     border-radius: 12px;
-    height: auto;
     margin-left: 40px;
+    overflow-y: auto;
 }
 
-.Projet-Motus .project-info {
-    max-height: 300px;
-    overflow-y: auto;
+.Projet-Motus .projet-info{
+    max-height: 400px;
 }
-.Projet-Azul .project-info {
-    max-height: 1260px;
-    overflow-y: auto;
+.Projet-Azul .projet-info{
+    max-height: 1680px;
 }
 
 
